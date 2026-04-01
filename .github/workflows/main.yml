@@ -1,0 +1,29 @@
+name: CI/CD Pipeline
+
+on:
+  pull_request:
+    branches:
+      - main # Se dispara únicamente cuando se realice un Pull Request hacia main
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout del código
+        uses: actions/checkout@v3
+
+      - name: Login en Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.USER_DOCKERHUB }}
+          # GitHub inyectará el token que guardaste en esta variable
+          password: ${{ secrets.PASSWORD_DOCKERHUB }} 
+
+      - name: Build y Push de la imagen
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: true
+          # Reemplaza 'mi-proyecto-web' por el nombre de tu repositorio en Docker Hub
+          tags: ${{ secrets.USER_DOCKERHUB }}/mi-proyecto-web:latest
